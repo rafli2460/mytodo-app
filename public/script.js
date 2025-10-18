@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const statusSpan = todoItem.querySelector('.todo-status');
                 const deleteBtn = todoItem.querySelector('.delete-btn');
 
+                const editBtn = todoItem.querySelector('.edit-btn');
+                const toggleStatusBtn = todoItem.querySelector('.toggle-status-btn');
+
                 // Populate the data
                 titleSpan.textContent = todo.title;
                 statusSpan.textContent = `Status: ${todo.status}`;
@@ -62,9 +65,43 @@ document.addEventListener('DOMContentLoaded', () => {
                     deleteTodo(todo.id);
                 });
 
+                // Add event listener for the edit button
+                editBtn.addEventListener('click', () => {
+                    window.location.href = `/public/edit.html?id=${todo.id}`;
+                });
+
+                // Add event listener for the toggle status button
+                toggleStatusBtn.addEventListener('click', () => {
+                    toggleTodoStatus(todo.id, todo.status);
+                });
+
                 // Append the new item to the list
                 todoList.appendChild(todoItem);
             });
+        }
+    };
+
+    const toggleTodoStatus = async (todoId, currentStatus) => {
+        const newStatus = currentStatus === 'pending' ? 'completed' : 'pending';
+        try {
+            const response = await fetch(`${apiUrl}/todos/${todoId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update todo');
+            }
+
+            fetchTodos();
+        } catch (error) {
+            console.error('Error updating todo:', error);
+            alert(error.message);
         }
     };
 
