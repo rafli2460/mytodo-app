@@ -93,6 +93,10 @@ func (h *TodoHandler) UpdateTodo(c *fiber.Ctx) error {
 		UserID: userID,
 	}
 
+	if req.Status != nil {
+		todoEntity.Status = *req.Status
+	}
+
 	updatedTodo, err := h.app.Services.Todos.Update(int64(id), todoEntity)
 	if err != nil {
 		return HttpError(c, responses.InternalServerError(fmt.Errorf("failed to update todo")))
