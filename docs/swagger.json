@@ -1,7 +1,9 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "contact": {},
+        "title": "MyTodo App API",
+        "version": "1.0"
     },
     "paths": {
         "/v1/auth/login": {
