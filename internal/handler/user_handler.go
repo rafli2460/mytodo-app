@@ -20,6 +20,17 @@ func NewUserHandler(app *contract.App) *UserHandler {
 	return &UserHandler{app: app}
 }
 
+// Register is a function to register a new user
+// @Summary Register a new user
+// @Description Register a new user
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body requests.User true "User"
+// @Success 201 {object} responses.Response
+// @Failure 400 {object} responses.ErrorResponse
+// @Failure 500 {object} responses.ErrorResponse
+// @Router /v1/auth/register [post]
 func (h *UserHandler) Register(c *fiber.Ctx) error {
 	var req requests.User
 	if err := c.BodyParser(&req); err != nil {
@@ -44,6 +55,18 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 	return HttpSuccess(c, "User registered successfully", nil)
 }
 
+// Login is a function to login a user
+// @Summary Login a user
+// @Description Login a user
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body requests.User true "User"
+// @Success 200 {object} responses.Response
+// @Failure 400 {object} responses.ErrorResponse
+// @Failure 401 {object} responses.ErrorResponse
+// @Failure 500 {object} responses.ErrorResponse
+// @Router /v1/auth/login [post]
 func (h *UserHandler) Login(c *fiber.Ctx) error {
 	var req requests.User
 	if err := c.BodyParser(&req); err != nil {

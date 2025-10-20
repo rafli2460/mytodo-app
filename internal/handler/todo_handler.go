@@ -18,6 +18,17 @@ func NewTodoHandler(app *contract.App) *TodoHandler {
 	return &TodoHandler{app: app}
 }
 
+// GetTodos is a function to get all todos for the authenticated user
+// @Summary Get all todos
+// @Description Get all todos for the authenticated user
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Success 200 {object} responses.Response
+// @Failure 401 {object} responses.ErrorResponse
+// @Failure 500 {object} responses.ErrorResponse
+// @Router /v1/todos [get]
 func (h *TodoHandler) GetTodos(c *fiber.Ctx) error {
 	// Assuming a middleware has placed the user's ID in locals.
 	userID, ok := c.Locals("user_id").(int64)
@@ -36,6 +47,19 @@ func (h *TodoHandler) GetTodos(c *fiber.Ctx) error {
 	return HttpSuccess(c, "Todos fetched successfully", todos)
 }
 
+// CreateTodo is a function to create a new todo
+// @Summary Create a new todo
+// @Description Create a new todo
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param todo body requests.Todo true "Todo"
+// @Success 201 {object} responses.Response
+// @Failure 400 {object} responses.ErrorResponse
+// @Failure 401 {object} responses.ErrorResponse
+// @Failure 500 {object} responses.ErrorResponse
+// @Router /v1/todos [post]
 func (h *TodoHandler) CreateTodo(c *fiber.Ctx) error {
 	// Get user_id from the JWT middleware
 	userID, ok := c.Locals("user_id").(int64)
@@ -55,6 +79,7 @@ func (h *TodoHandler) CreateTodo(c *fiber.Ctx) error {
 		UserID:      userID,
 		Title:       req.Title,
 		Description: req.Description,
+		Status:      *req.Status,
 	}
 
 	createdTodo, err := h.app.Services.Todos.Create(todoEntity)
@@ -65,6 +90,20 @@ func (h *TodoHandler) CreateTodo(c *fiber.Ctx) error {
 	return HttpSuccess(c, "Todo created successfully", createdTodo)
 }
 
+// UpdateTodo is a function to update a todo
+// @Summary Update a todo
+// @Description Update a todo
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param id path int true "Todo ID"
+// @Param todo body requests.Todo true "Todo"
+// @Success 200 {object} responses.Response
+// @Failure 400 {object} responses.ErrorResponse
+// @Failure 401 {object} responses.ErrorResponse
+// @Failure 500 {object} responses.ErrorResponse
+// @Router /v1/todos/{id} [put]
 func (h *TodoHandler) UpdateTodo(c *fiber.Ctx) error {
 	// Get user_id from the JWT middleware
 	userID, ok := c.Locals("user_id").(int64)
@@ -105,6 +144,19 @@ func (h *TodoHandler) UpdateTodo(c *fiber.Ctx) error {
 	return HttpSuccess(c, "Todo updated successfully", updatedTodo)
 }
 
+// DeleteTodo is a function to delete a todo
+// @Summary Delete a todo
+// @Description Delete a todo
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param id path int true "Todo ID"
+// @Success 200 {object} responses.Response
+// @Failure 400 {object} responses.ErrorResponse
+// @Failure 401 {object} responses.ErrorResponse
+// @Failure 500 {object} responses.ErrorResponse
+// @Router /v1/todos/{id} [delete]
 func (h *TodoHandler) DeleteTodo(c *fiber.Ctx) error {
 	// Get todo ID from URL parameter
 	id, err := c.ParamsInt("id")
