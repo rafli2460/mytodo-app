@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	swagger "github.com/gofiber/swagger"
 	"github.com/gofiber/contrib/fiberzerolog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -19,6 +20,8 @@ import (
 	"github.com/rafli024/mytodo-app/internal/service"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/pkgerrors"
+
+	_ "github.com/rafli024/mytodo-app/docs"
 )
 
 func NewApp() *contract.App {
@@ -54,7 +57,6 @@ func NewApp() *contract.App {
 		fiberApp.Use(pprof.New())
 	}
 
-	customLogger = zerolog.New(os.Stderr).With().Timestamp().Logger()
 	app := &contract.App{
 		Fiber:  fiberApp,
 		Logger: &customLogger,
@@ -70,8 +72,24 @@ func NewApp() *contract.App {
 	return app
 }
 
+
+// @title Todo List API
+// @version 1.0
+// @description This is a sample swagger for Fiber
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.email fiber@swagger.io
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
 func main() {
 	app := NewApp()
+
+	app.Fiber.Get("/swagger/*", swagger.HandlerDefault)
 
 	if err := app.Fiber.Listen(":" + app.Config[constant.ServerPort]); err != nil {
 		app.Logger.Fatal().Err(err).Msg("Fiber App Error")
